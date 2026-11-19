@@ -1,0 +1,21 @@
+{
+  "title": "Статус неизвестного документа",
+  "request": {
+    "id": "1",
+    "key": "mock-kassa-key",
+    "version": "1.0.2",
+    "method": "getPreReceiptStatus",
+    "params": {
+      "payCheckNumber": "NO-SUCH-DOC"
+    }
+  },
+  "answer": {
+    "id": 1,
+    "error": [
+      {
+        "code": 14829,
+        "message": "PRERECEIPT_NOT_FOUND"
+      }
+    ]
+  }
+}

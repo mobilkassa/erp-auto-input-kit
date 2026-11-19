@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тестовая касса Mobilkassa</title>
+<style>
+  :root { --bg: #F2F5F7; --surface: #FFFFFF; --ink: #26292B; --muted: #5B6266; --rule: #DCE1E5; --accent: #22779A; --ok: #198754; --stop: #C94141; --warn: #9A6400; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #121212; --surface: #1E2022; --ink: #E3E3E3; --muted: #A4ABAF; --rule: #35393B; --accent: #6BB6D8; --ok: #6FCF97; --stop: #FF8A80; --warn: #F7BB42; color-scheme: dark; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "Segoe UI", Roboto, system-ui, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 48px; display: grid; gap: 16px; }
+  header { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; }
+  h1 { font-size: 20px; margin: 0; }
+  h2 { font-size: 16px; margin: 0 0 8px; }
+  code { font-family: Consolas, monospace; font-size: 13px; }
+  .muted { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  section { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--rule); font-variant-numeric: tabular-nums; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; }
+  input[type=number] { width: 72px; font: inherit; padding: 2px 4px; }
+  select, button { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer; }
+  button.main { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.bad { color: var(--stop); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .item { padding: 8px 0; border-bottom: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+  .status { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; border: 1px solid currentColor; }
+  .ISSUED { color: var(--ok); } .REJECTED { color: var(--stop); } .PARKED { color: var(--warn); }
+  .error { color: var(--stop); margin-top: 8px; min-height: 1.5em; }
+  pre { white-space: pre-wrap; word-break: break-all; margin: 4px 0 0; font-size: 12px; }
+  details { border-bottom: 1px solid var(--rule); padding: 6px 0; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Тестовая касса Mobilkassa</h1>
+    <span class="muted">Адрес: <code id="address"></code></span>
+    <span class="muted">Ключ: <code id="key"></code></span>
+    <span class="muted">Ожидание кассира: <span id="idle"></span> с</span>
+  </header>
+  <div class="grid">
+    <section>
+      <h2>Окно кассы</h2>
+      <div id="window" class="muted">Нет предчека. Отправьте sendPreReceipt из учётной системы.</div>
+      <div id="error" class="error"></div>
+    </section>
+    <section>
+      <h2>Предчеки</h2>
+      <div id="parked" class="muted">Пусто</div>
+    </section>
+  </div>
+  <section>
+    <h2>Оформленные и отклонённые</h2>
+    <div id="done" class="muted">Пусто</div>
+  </section>
+  <section>
+    <h2>Последние запросы</h2>
+    <div id="log" class="muted">Пусто</div>
+  </section>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const money = (n) => Number(n).toLocaleString("ru-RU", { maximumFractionDigits: 2 });
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let shownWindow = "";
+let shownRest = "";
+
+async function control(action, body) {
+  const answer = await fetch("/mock/" + action, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  $("error").textContent = answer.ok ? "" : (await answer.json()).error;
+  refresh();
+}
+
+function renderWindow(open) {
+  if (!open) return '<div class="muted">Нет предчека. Отправьте sendPreReceipt из учётной системы.</div>';
+  const rows = open.lines.map((l, i) => `<tr><td>${esc(l.name)}<div class="muted">${esc(l.sku ?? "")}</div></td>
+    <td><input type="number" min="0" max="${l.amount}" step="any" value="${l.amount}" data-index="${i}" data-price="${l.price}"></td>
+    <td>${money(l.price)}</td></tr>`).join("");
+  return `<div><b>${esc(open.payCheckNumber)}</b> · ${esc(open.type)} · ${open.touched ? "кассир работает" : "ждёт кассира"} · учётная система ждёт ответа: ${open.calls}</div>
+    <table><tr><th>Позиция</th><th>Кол-во</th><th>Цена</th></tr>${rows}</table>
+    <div class="row">
+      <select id="payment"><option value="">Оплата как в запросе</option><option>CASH</option><option>CARD</option><option>ONLINE</option><option>DEBT</option></select>
+      <button class="main" id="issue">Оформить</button>
+      <button id="park">В Предчеки</button>
+      <button class="bad" id="reject">Отклонить</button>
+    </div>`;
+}
+
+function bindWindow(open) {
+  if (!open) return;
+  const n = open.payCheckNumber;
+  document.querySelectorAll("#window input, #window select").forEach((el) =>
+    el.addEventListener("input", () => { if (!open.touched) { open.touched = true; control("touch", { payCheckNumber: n }); } }, { once: true }));
+  $("issue").onclick = () => {
+    const inputs = [...document.querySelectorAll("#window input")];
+    const items = inputs.map((el) => ({ index: Number(el.dataset.index), amount: Number(el.value) }));
+    const total = inputs.reduce((s, el) => s + Number(el.value) * Number(el.dataset.price), 0);
+    const kind = $("payment").value;
+    control("issue", { payCheckNumber: n, changes: { items, payments: kind ? [{ type: kind, amount: total }] : null } });
+  };
+  $("park").onclick = () => control("park", { payCheckNumber: n });
+  $("reject").onclick = () => control("reject", { payCheckNumber: n });
+}
+
+function renderList(list, withActions) {
+  if (!list.length) return '<div class="muted">Пусто</div>';
+  return list.map((s) => `<div class="item"><span><b>${esc(s.payCheckNumber)}</b> · ${esc(s.type)} · ${money(s.total)}
+    <span class="status ${s.status}">${s.status}</span></span>
+    ${withActions ? `<span><button data-act="open" data-n="${esc(s.payCheckNumber)}">Открыть</button>
+      <button data-act="issue" data-n="${esc(s.payCheckNumber)}">Оформить</button>
+      <button class="bad" data-act="reject" data-n="${esc(s.payCheckNumber)}">Отклонить</button></span>` : ""}</div>`).join("");
+}
+
+function renderLog(log) {
+  if (!log.length) return '<div class="muted">Пусто</div>';
+  return log.slice(0, 30).map((e) => `<details><summary><code>${esc(e.time)}</code> ${esc(e.method ?? "?")}</summary>
+    <pre>${esc(e.request)}</pre><pre>${esc(e.answer)}</pre></details>`).join("");
+}
+
+async function refresh() {
+  try {
+    const [state, log] = await Promise.all([fetch("/mock/state").then((r) => r.json()), fetch("/mock/log").then((r) => r.json())]);
+    $("address").textContent = state.info.address;
+    $("key").textContent = state.info.key;
+    $("idle").textContent = state.info.idleSeconds;
+    // Re-draw the window only when it changes, so a typed amount survives the next poll.
+    const w = JSON.stringify(state.open && { n: state.open.payCheckNumber, l: state.open.lines, c: state.open.calls });
+    if (w !== shownWindow) { shownWindow = w; $("window").innerHTML = renderWindow(state.open); bindWindow(state.open); }
+    const rest = JSON.stringify([state.parked, state.done, log.length && log[0].time + log.length]);
+    if (rest !== shownRest) {
+      shownRest = rest;
+      $("parked").innerHTML = renderList(state.parked, true);
+      $("done").innerHTML = renderList(state.done.slice().reverse(), false);
+      $("log").innerHTML = renderLog(log);
+      document.querySelectorAll("#parked button").forEach((b) => b.onclick = () => control(b.dataset.act, { payCheckNumber: b.dataset.n }));
+    }
+  } catch (e) {
+    $("error").textContent = "Нет связи с тестовой кассой";
+  }
+}
+
+refresh();
+setInterval(refresh, 1000);
+</script>
+</body>
+</html>

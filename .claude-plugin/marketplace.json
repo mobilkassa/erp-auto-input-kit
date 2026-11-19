@@ -1,0 +1,14 @@
+{
+  "name": "mobilkassa-kit",
+  "owner": {
+    "name": "Mobilkassa"
+  },
+  "description": "Перевод учётной системы (ERP) на автоввод данных чека кассы Mobilkassa: предчеки вместо прямых вызовов порта 6461.",
+  "plugins": [
+    {
+      "name": "mobilkassa",
+      "source": "./plugins/mobilkassa",
+      "description": "/mobilkassa:migrate переводит учётную систему со старых методов порта 6461 на предчеки; analyze, plan и implement выполняют по одному шагу."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "mobilkassa",
+  "version": "1.0.2",
+  "description": "Moves an ERP from the old Mobilkassa 6461 receipt calls to auto-input pre-receipts: analyze, plan, implement, test against the mock kassa.",
+  "author": {
+    "name": "Mobilkassa"
+  },
+  "homepage": "https://mobilkassa-autoinput-api.vercel.app",
+  "repository": "https://github.com/mobilkassa/erp-auto-input-kit",
+  "keywords": ["mobilkassa", "pospoint", "kassa", "pre-receipt", "erp", "1c", "fiscal"]
+}

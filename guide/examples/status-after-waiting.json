@@ -1,0 +1,76 @@
+{
+  "title": "После 14827 кассир оформил предчек: статус ISSUED",
+  "setup": [
+    {
+      "request": {
+        "id": "11",
+        "key": "mock-kassa-key",
+        "version": "1.0.2",
+        "method": "sendPreReceipt",
+        "params": {
+          "payCheckNumber": "INV-000126",
+          "type": "SALE",
+          "items": [
+            {
+              "name": "Чай чёрный 100 г",
+              "amount": 2,
+              "price": 15000,
+              "mxik": "02101001001000000",
+              "ownerType": 0,
+              "unit": "1",
+              "packageCode": 1500,
+              "taxPercent": 12,
+              "sku": "2050"
+            }
+          ],
+          "byCash": 30000
+        }
+      }
+    },
+    {
+      "cashier": [
+        {
+          "action": "idle"
+        },
+        {
+          "action": "issue"
+        }
+      ]
+    }
+  ],
+  "request": {
+    "id": "1",
+    "key": "mock-kassa-key",
+    "version": "1.0.2",
+    "method": "getPreReceiptStatus",
+    "params": {
+      "payCheckNumber": "INV-000126"
+    }
+  },
+  "answer": {
+    "id": 1,
+    "result": {
+      "payCheckNumber": "INV-000126",
+      "status": "ISSUED",
+      "type": "SALE",
+      "changed": false,
+      "items": [
+        {
+          "sku": "2050",
+          "name": "Чай чёрный 100 г",
+          "amount": 2,
+          "price": 15000,
+          "discount": 0,
+          "sum": 30000
+        }
+      ],
+      "payments": [
+        {
+          "type": "CASH",
+          "amount": 30000
+        }
+      ],
+      "total": 30000
+    }
+  }
+}

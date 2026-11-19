@@ -1,0 +1,6 @@
+.superpowers/
+build/
+.gradle/
+node_modules/
+**/evals/results/
+*.class

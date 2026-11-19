@@ -1,0 +1,10 @@
+{
+  "name": "legacy-shop-erp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Old-style shop ERP that issues Mobilkassa receipts with the direct 6461 calls (sample for the plugin's checks).",
+  "scripts": {
+    "test": "node --test"
+  }
+}

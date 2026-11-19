@@ -1,0 +1,34 @@
+{
+  "title": "Старый метод registerSaleFull после 1 декабря",
+  "request": {
+    "id": "1",
+    "key": "mock-kassa-key",
+    "version": "1.0.2",
+    "method": "registerSaleFull",
+    "params": {
+      "items": [
+        {
+          "name": "Чай чёрный 100 г",
+          "amount": 2,
+          "price": 15000,
+          "mxik": "02101001001000000",
+          "ownerType": 0,
+          "unit": "1",
+          "packageCode": 1500,
+          "taxPercent": 12
+        }
+      ],
+      "byCash": 30000,
+      "byCard": 0
+    }
+  },
+  "answer": {
+    "id": 1,
+    "error": [
+      {
+        "code": -32601,
+        "message": "Method not found"
+      }
+    ]
+  }
+}

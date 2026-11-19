@@ -1,0 +1,66 @@
+{
+  "title": "Возврат продажи, сделанной на кассе: продажа по saleId, строка по штрихкоду",
+  "setup": [
+    {
+      "seedSale": {
+        "saleId": 7,
+        "items": [
+          {
+            "uid": 11,
+            "name": "Сахар 1 кг",
+            "mxik": "10701001001000000",
+            "barcode": "4780001000017",
+            "amount": 2,
+            "price": 12000
+          }
+        ]
+      }
+    }
+  ],
+  "request": {
+    "id": "1",
+    "key": "mock-kassa-key",
+    "version": "1.0.2",
+    "method": "sendRefundPreReceipt",
+    "params": {
+      "payCheckNumber": "RET-7",
+      "saleId": 7,
+      "items": [
+        {
+          "barcode": "4780001000017",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  "cashier": [
+    {
+      "action": "issue"
+    }
+  ],
+  "answer": {
+    "id": 1,
+    "result": {
+      "payCheckNumber": "RET-7",
+      "status": "ISSUED",
+      "type": "REFUND",
+      "changed": false,
+      "items": [
+        {
+          "name": "Сахар 1 кг",
+          "amount": 1,
+          "price": 12000,
+          "discount": 0,
+          "sum": 12000
+        }
+      ],
+      "payments": [
+        {
+          "type": "CASH",
+          "amount": 12000
+        }
+      ],
+      "total": 12000
+    }
+  }
+}

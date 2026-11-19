@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: analyze-legacy-1c
+tags: [1c, analyze]
+context:
+  scaffold_script: scaffold.sh

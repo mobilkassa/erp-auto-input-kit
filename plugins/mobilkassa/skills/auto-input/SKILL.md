@@ -1,6 +1,6 @@
 ---
 name: auto-input
-description: Mobilkassa / Pospoint kassa auto-input (pre-receipt) API on port 6461. Use when code talks to a Mobilkassa or Pospoint kassa over JSON-RPC on port 6461 or the /pospoint path, or names registerSale, registerSaleFull, registerRefund, registerRefundFull, getReceipt, getReceiptByPayCheckNumber, sendPreReceipt, sendRefundPreReceipt or getPreReceiptStatus — to read, write, review or migrate that code.
+description: Mobilkassa / Pospoint kassa auto-input (pre-receipt) API on port 6461. Use when code talks to a Mobilkassa or Pospoint kassa over JSON-RPC on port 6461 or the /pospoint path, or names registerSale, registerSaleFull, registerRefund, registerRefundFull, getReceipt, getReceiptByPayCheckNumber, sendPreReceipt, sendRefundPreReceipt or getPreReceiptStatus — to read, write, review or migrate that code — or when an ERP should start sending receipts to a Mobilkassa or Pospoint kassa.
 ---
 
 # Mobilkassa auto-input (pre-receipts)

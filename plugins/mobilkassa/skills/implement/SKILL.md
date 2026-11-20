@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Do one step of mobilkassa-auto-input/plan.md (moving this ERP to Mobilkassa pre-receipts), test it against the mock kassa, mark it done, and stop for review.
+description: Do one step of mobilkassa-auto-input/plan.md (moving or connecting this ERP to Mobilkassa pre-receipts), test it against the mock kassa, mark it done, and stop for review.
 argument-hint: "[step number]"
 disable-model-invocation: true
 allowed-tools: Read Grep Glob Write Edit Bash AskUserQuestion

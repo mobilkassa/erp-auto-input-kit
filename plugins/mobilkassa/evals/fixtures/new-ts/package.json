@@ -1,0 +1,10 @@
+{
+  "name": "new-shop-erp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shop ERP that does not talk to a kassa yet (sample for the plugin's checks).",
+  "scripts": {
+    "test": "node --test"
+  }
+}

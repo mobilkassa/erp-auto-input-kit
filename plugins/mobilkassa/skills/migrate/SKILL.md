@@ -1,19 +1,20 @@
 ---
 name: migrate
-description: Move this ERP from the old Mobilkassa 6461 receipt calls to auto-input pre-receipts end to end — analyze, plan, implement step by step with a review stop after each, test against the mock kassa, and write the acceptance checklist.
+description: Move this ERP from the old Mobilkassa 6461 receipt calls to auto-input pre-receipts, or connect an ERP to them for the first time, end to end — analyze, plan, implement step by step with a review stop after each, test against the mock kassa, and write the acceptance checklist.
+argument-hint: "[new]"
 disable-model-invocation: true
 allowed-tools: Read Grep Glob Write Edit Bash AskUserQuestion
 ---
 
 # /mobilkassa:migrate
 
-The guided path from the old receipt calls (`registerSale*`, `registerRefund*`, `getReceipt*`) to pre-receipts. Talk to the user in their language. Everything written into the repo for this lives in `mobilkassa-auto-input/` (Russian), plus the code changes themselves.
+The guided path from the old receipt calls (`registerSale*`, `registerRefund*`, `getReceipt*`) to pre-receipts, or, for an ERP that does not talk to the kassa yet, to its first pre-receipts (`/mobilkassa:migrate new`, or found by the analysis). Talk to the user in their language. Everything written into the repo for this lives in `mobilkassa-auto-input/` (Russian), plus the code changes themselves.
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/auto-input/SKILL.md` first.
 
 ## 1. Analyze
 
-Do the steps of `${CLAUDE_PLUGIN_ROOT}/skills/analyze/SKILL.md` and write `mobilkassa-auto-input/analysis.md` (skip if it exists and is newer than the last commit touching the files it names). If it says there is nothing to move, tell the user and stop.
+Do the steps of `${CLAUDE_PLUGIN_ROOT}/skills/analyze/SKILL.md` with `$ARGUMENTS` (`new` passes through) and write `mobilkassa-auto-input/analysis.md` (skip if it exists and is newer than the last commit touching the files it names). If it says there is nothing to move, tell the user and stop.
 
 ## 2. Plan
 
@@ -29,7 +30,7 @@ For each step not marked `[x]`, follow `${CLAUDE_PLUGIN_ROOT}/skills/implement/S
 
 ## 5. Full scenario run
 
-When every step is done, run S1–S8 (`references/scenarios.md`) against the mock once more, all together. For 1C, walk the developer through them on the mock's cashier page and record each outcome. S8 is a search: no old receipt method name and no read of `fmNo`, `kkmNo`, `shiftNumber`, `url`, `fiscalSign` from a kassa answer is left in the code.
+When every step is done, run S1–S8 (`references/scenarios.md`) against the mock once more, all together. For 1C, walk the developer through them on the mock's cashier page and record each outcome. S8 is a search (for новое подключение it only confirms no old call was added): no old receipt method name and no read of `fmNo`, `kkmNo`, `shiftNumber`, `url`, `fiscalSign` from a kassa answer is left in the code.
 
 ## 6. Acceptance checklist
 
@@ -38,6 +39,7 @@ Write `mobilkassa-auto-input/acceptance.md` (Russian) for the run on a real Posp
 - Подготовка: касса Retail; Настройки → Кассовый режим → «Автоввод данных чека» включён; адрес и ключ из этого блока внесены в настройки учётной системы; тестовый ФМ.
 - S1–S8 as a checklist, each with what the cashier does on the real kassa («Оформить», change a quantity and the payment, «Отклонить», «В Предчеки») and what the ERP must show; a column for the result.
 - Что проверяет только настоящая касса: ИКПУ по каталогу tasnif (14825), коды маркировки онлайн, ограничения продажи за наличные, печать чека.
+- For новое подключение: «Запуск» from the plan instead of the next item; S1–S7 only.
 - Порядок перехода from the plan's «Переход» section: `ext-ser-mode = redirect` while the new version rolls out — it serves the old calls only when every `registerSale*` item carries `sku` (`14804` without) — (ask Mobilkassa to switch it on for the organization), then each store moves to the new calls; after all stores, the old calls answer -32601.
 
 ## 7. Summary

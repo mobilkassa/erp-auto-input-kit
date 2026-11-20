@@ -1,14 +1,21 @@
 ---
 name: analyze
-description: Find every Mobilkassa 6461 receipt call and fiscal-field use in this ERP and write mobilkassa-auto-input/analysis.md. Changes no code.
-argument-hint: "[path]"
+description: Find every Mobilkassa 6461 receipt call and fiscal-field use in this ERP, or, for an ERP that does not talk to the kassa yet, the places where pre-receipts must be sent, and write mobilkassa-auto-input/analysis.md. Changes no code.
+argument-hint: "[new] [path]"
 disable-model-invocation: true
 allowed-tools: Read Grep Glob Write
 ---
 
 # /mobilkassa:analyze
 
-Analyze the ERP in `$ARGUMENTS` (default: the current directory) for the move from the old Mobilkassa 6461 calls to auto-input pre-receipts. Write one file, `mobilkassa-auto-input/analysis.md`, in Russian. Change nothing else: no source file, no config.
+Analyze the ERP in the path given in `$ARGUMENTS` (default: the current directory) for auto-input pre-receipts. Write one file, `mobilkassa-auto-input/analysis.md`, in Russian. Change nothing else: no source file, no config.
+
+Two modes:
+
+- **Переход** (default): the ERP issues receipts with the old 6461 calls. Sections 1–3.
+- **Новое подключение**: `$ARGUMENTS` starts with `new`, or the search in section 2 finds no contact with the kassa at all (no `6461`, no `/pospoint`, no kassa method name). Sections 1, 2, 4 and 5.
+
+An ERP that talks to the kassa but sends no receipts (only X/Z reports, FM checks) stays in **Переход**: the report says «Переносить нечего» and names `/mobilkassa:analyze new` for when the ERP should start sending receipts.
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/auto-input/SKILL.md` first, and `${CLAUDE_PLUGIN_ROOT}/skills/auto-input/references/auto-input.md` for the field and code details.
 
@@ -35,6 +42,7 @@ Russian, in this shape:
 ```markdown
 # Анализ: переход на автоввод данных чека
 
+Режим: переход
 Стек: <1С (выгрузка конфигурации) | TypeScript/Electron | C# | PHP | Java | …>
 Клиент из плагина: <clients/1c | clients/ts | clients/java | нет готового — по руководству>
 
@@ -63,3 +71,51 @@ Every row has `file:line` (1-based, the line of the call or the field use). For 
 If nothing needs to change, say so plainly in «Итог» («Переносить нечего: …») and list the unchanged calls.
 
 End by telling the user, in one or two lines in their language, how many places were found and that the next step is `/mobilkassa:plan`.
+
+## 4. Новое подключение: find where pre-receipts go
+
+Read `references/auto-input.md` sections «sendPreReceipt», «Удержание вызова», «sendRefundPreReceipt» first. Then find, reading the code around each place:
+
+1. Where a sale is completed (posted, paid, closed): the place to send `sendPreReceipt`. TS / Java / C# / PHP: the service or handler that completes an invoice, order or check. 1C: the sale documents (`ЧекККМ`, `РеализацияТоваровУслуг`, `ОтчетОРозничныхПродажах` or the configuration's own) and their posting handler or form command.
+2. Where a refund (return) is completed, and how it names its sale: this becomes `salePayCheckNumber`.
+3. The document number: unique per sale and per refund, and kept across retries. It becomes `payCheckNumber`. A number made anew on each attempt is a finding.
+4. Every required item field (`name`, `amount`, `price`, `mxik`, `ownerType`, `unit`, `packageCode`, `taxPercent`, `sku`): where the ERP keeps it (product card, document line). `sku` is the ERP's product or line key. A field the ERP does not have is a finding: name where it must be added.
+5. Payment: if the ERP knows cash and card amounts, they become `byCash` / `byCard`; otherwise the cashier picks the payment.
+6. Where settings live (the kassa address, key, timeout 120 s) and which HTTP client the project already uses.
+7. Where the user sees a document's state: the states «ожидает кассира», «оформлен», «отклонён» go there.
+
+## 5. Новое подключение: write `mobilkassa-auto-input/analysis.md`
+
+Russian, in this shape:
+
+```markdown
+# Анализ: подключение автоввода данных чека
+
+Режим: новое подключение
+Стек: <…>
+Клиент из плагина: <clients/1c | clients/ts | clients/java | нет готового — по руководству>
+
+## Куда добавить
+
+| Файл:строка | Что найдено | Что сделать |
+|---|---|---|
+| src/sales.ts:31 | `completeSale` проводит продажу | после проведения — `sendPreReceipt` с номером продажи, руководство «sendPreReceipt» |
+
+## Данные позиции
+
+| Поле | Откуда | Нет в учётной системе — что сделать |
+|---|---|---|
+| `sku` | `Product.id` | — |
+
+## Риски
+
+- <a call that holds until the cashier acts (90 s, or without limit once the cashier opens it) in a UI thread or a form; numbers that are not unique; missing item data>
+
+## Итог
+
+<N> мест, куда добавить отправку, <K> полей позиции, которых нет. Следующий шаг: `/mobilkassa:plan`.
+```
+
+Every row has `file:line`. For 1C, the «Что сделать» column says the change goes into a configuration extension, and section 1's export and extension steps apply here too.
+
+End by telling the user, in one or two lines in their language, where sales and refunds will send pre-receipts, what item data is missing, and that the next step is `/mobilkassa:plan`.

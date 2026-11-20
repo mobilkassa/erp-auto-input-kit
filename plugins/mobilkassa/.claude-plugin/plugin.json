@@ -1,6 +1,6 @@
 {
   "name": "mobilkassa",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Moves an ERP from the old Mobilkassa 6461 receipt calls to auto-input pre-receipts, or connects a new ERP to them: analyze, plan, implement, test against the mock kassa.",
   "author": {
     "name": "Mobilkassa"

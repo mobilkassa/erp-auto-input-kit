@@ -17,7 +17,7 @@ Two modes:
 - **Переход** (default): the ERP issues receipts with the old 6461 calls. Sections 1–3.
 - **Новое подключение**: `$ARGUMENTS` starts with `new`, or the search in section 2 finds no contact with the kassa at all (no `6461`, no `/pospoint`, no kassa method name). Sections 1, 2, 4 and 5.
 
-An ERP that talks to the kassa but sends no receipts (only X/Z reports, FM checks) stays in **Переход**: the report says «Переносить нечего» and names `/mobilkassa:analyze new` for when the ERP should start sending receipts.
+An ERP that talks to the kassa but sends no receipts (only X/Z reports, FM checks) stays in **Переход**: the report says «Переносить нечего» and names `/mobilkassa:connect` for when the ERP should start sending receipts.
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/auto-input/SKILL.md` first, and `${CLAUDE_PLUGIN_ROOT}/skills/auto-input/references/auto-input.md` for the field and code details.
 

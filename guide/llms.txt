@@ -10,4 +10,4 @@
 
 ## Optional
 
-- [Плагин Claude Code и тестовая касса](https://github.com/mobilkassa/erp-auto-input-kit): `/mobilkassa:migrate` переводит учётную систему на предчеки или подключает новую; готовые клиенты для 1C, TypeScript и Java (C# и PHP — в следующих версиях)
+- [Плагин Claude Code и тестовая касса](https://github.com/mobilkassa/erp-auto-input-kit): `/mobilkassa:migrate` переводит учётную систему на предчеки, `/mobilkassa:connect` подключает новую; готовые клиенты для 1C, TypeScript и Java (C# и PHP — в следующих версиях)

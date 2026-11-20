@@ -8,7 +8,7 @@
     {
       "name": "mobilkassa",
       "source": "./plugins/mobilkassa",
-      "description": "/mobilkassa:migrate переводит учётную систему со старых методов порта 6461 на предчеки или подключает новую; analyze, plan и implement выполняют по одному шагу."
+      "description": "/mobilkassa:migrate переводит учётную систему со старых методов порта 6461 на предчеки, /mobilkassa:connect подключает новую; analyze, plan и implement выполняют по одному шагу."
     }
   ]
 }

@@ -20,3 +20,4 @@ Each run is a real model call and is billed. Use `--runs 1 --ablation none` whil
 Mean Δ +0.78, 317 s, $5.51.
 
 2026-11-20, 1 run, with plugin only: `analyze-new-connection` 1.00 ($0.35), `analyze-nothing-to-move` 1.00, `analyze-legacy-ts` 1.00.
+`connect-stops-for-review` 1.00 ($0.51).

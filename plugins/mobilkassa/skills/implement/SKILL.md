@@ -8,6 +8,8 @@ allowed-tools: Read Grep Glob Write Edit Bash AskUserQuestion
 
 # /mobilkassa:implement
 
+Outside Claude Code (skills installed with `npx skills add`), `${CLAUDE_PLUGIN_ROOT}/skills/<name>/` is the folder `../<name>/` next to this skill, a `/mobilkassa:<name>` command is the skill `<name>`, and AskUserQuestion is asking the developer and waiting for the answer.
+
 Do exactly one step of `mobilkassa-auto-input/plan.md`: step `$ARGUMENTS`, or the first one not marked `[x]`. Talk to the user in their language; write code comments in the repo's language and style.
 
 ## Before you edit

@@ -8,6 +8,8 @@ allowed-tools: Read Grep Glob Write
 
 # /mobilkassa:analyze
 
+Outside Claude Code (skills installed with `npx skills add`), `${CLAUDE_PLUGIN_ROOT}/skills/<name>/` is the folder `../<name>/` next to this skill, a `/mobilkassa:<name>` command is the skill `<name>`, and AskUserQuestion is asking the developer and waiting for the answer.
+
 Analyze the ERP in the path given in `$ARGUMENTS` (default: the current directory) for auto-input pre-receipts. Write one file, `mobilkassa-auto-input/analysis.md`, in Russian. Change nothing else: no source file, no config.
 
 Two modes:

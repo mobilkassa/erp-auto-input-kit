@@ -8,6 +8,8 @@ allowed-tools: Read Grep Glob Write Edit Bash AskUserQuestion
 
 # /mobilkassa:migrate
 
+Outside Claude Code (skills installed with `npx skills add`), `${CLAUDE_PLUGIN_ROOT}/skills/<name>/` is the folder `../<name>/` next to this skill, a `/mobilkassa:<name>` command is the skill `<name>`, and AskUserQuestion is asking the developer and waiting for the answer.
+
 The guided path from the old receipt calls (`registerSale*`, `registerRefund*`, `getReceipt*`) to pre-receipts, or, for an ERP that does not talk to the kassa yet, to its first pre-receipts (`/mobilkassa:migrate new`, or found by the analysis). Talk to the user in their language. Everything written into the repo for this lives in `mobilkassa-auto-input/` (Russian), plus the code changes themselves.
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/auto-input/SKILL.md` first.

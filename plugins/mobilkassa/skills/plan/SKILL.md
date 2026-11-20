@@ -7,6 +7,8 @@ allowed-tools: Read Grep Glob Write
 
 # /mobilkassa:plan
 
+Outside Claude Code (skills installed with `npx skills add`), `${CLAUDE_PLUGIN_ROOT}/skills/<name>/` is the folder `../<name>/` next to this skill, a `/mobilkassa:<name>` command is the skill `<name>`, and AskUserQuestion is asking the developer and waiting for the answer.
+
 Write the plan for this ERP into `mobilkassa-auto-input/plan.md`, in Russian. Change no source file. The «Режим» line of `analysis.md` picks the plan: **переход** (the rules below as written) or **новое подключение** (see «Новое подключение»).
 
 1. Read `mobilkassa-auto-input/analysis.md`. If it is missing, do the steps of `${CLAUDE_PLUGIN_ROOT}/skills/analyze/SKILL.md` first and write it.
